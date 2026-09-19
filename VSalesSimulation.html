@@ -1,0 +1,511 @@
+<title>Duka la Amani Demo</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<style>
+  :root{
+    --paper:#ffffff; --surface:#eef3f1; --surface-2:#e3ece7; --line:#d3ddd8;
+    --ink:#152420; --ink-soft:#58685f; --ink-faint:#8a9891;
+    --brand:#1a9c6b; --brand-dark:#0f6e48; --brand-tint:#e3f5ec;
+    --blue:#1c6ea4; --blue-tint:#e6f1f8;
+    --warn:#a6690f; --warn-tint:#fbeed9;
+    --danger:#c0392b;
+    --shadow: 0 18px 40px -18px rgba(15,40,30,0.35);
+    --shadow-sm: 0 2px 8px rgba(15,40,30,0.08);
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --paper:#101a15; --surface:#0b120e; --surface-2:#182420; --line:#26352c;
+      --ink:#e9f2ec; --ink-soft:#a9bdb1; --ink-faint:#748376;
+      --brand:#34c98c; --brand-dark:#57cf92; --brand-tint:#153327;
+      --blue:#5fb0e0; --blue-tint:#112c3d;
+      --warn:#e0ab52; --warn-tint:#3a2c12;
+      --danger:#e2685a;
+      --shadow: 0 18px 40px -18px rgba(0,0,0,0.6);
+      --shadow-sm: 0 2px 8px rgba(0,0,0,0.35);
+    }
+  }
+  :root[data-theme="dark"]{
+    --paper:#101a15; --surface:#0b120e; --surface-2:#182420; --line:#26352c;
+    --ink:#e9f2ec; --ink-soft:#a9bdb1; --ink-faint:#748376;
+    --brand:#34c98c; --brand-dark:#57cf92; --brand-tint:#153327;
+    --blue:#5fb0e0; --blue-tint:#112c3d;
+    --warn:#e0ab52; --warn-tint:#3a2c12;
+    --danger:#e2685a;
+    --shadow: 0 18px 40px -18px rgba(0,0,0,0.6);
+    --shadow-sm: 0 2px 8px rgba(0,0,0,0.35);
+  }
+  *{box-sizing:border-box;}
+  body{
+    background:var(--surface); color:var(--ink);
+    font-family:"IBM Plex Sans",system-ui,-apple-system,Segoe UI,sans-serif;
+    margin:0; padding:24px 16px 100px; min-height:100%;
+  }
+  .mono{font-family:"IBM Plex Mono",ui-monospace,Menlo,monospace; font-variant-numeric:tabular-nums;}
+  .page{max-width:1100px; margin:0 auto;}
+
+  .lede{max-width:680px; margin:0 auto 22px; text-align:center;}
+  .lede .kicker{color:var(--brand-dark); font-weight:600; font-size:12.5px; letter-spacing:.08em; text-transform:uppercase;}
+  .lede h1{font-size:25px; margin:8px 0 6px; text-wrap:balance;}
+  .lede p{color:var(--ink-soft); font-size:14px; line-height:1.55; margin:0;}
+  .lede .verified{
+    display:inline-flex; align-items:center; gap:6px; margin-top:10px; font-size:11.5px; font-weight:600;
+    color:var(--brand-dark); background:var(--brand-tint); padding:4px 10px; border-radius:100px;
+  }
+
+  .frame{
+    background:var(--paper); border-radius:14px; box-shadow:var(--shadow);
+    border:1px solid var(--line); overflow:hidden;
+  }
+  .chrome{
+    display:flex; align-items:center; gap:10px; padding:10px 14px;
+    background:var(--surface-2); border-bottom:1px solid var(--line);
+  }
+  .dots{display:flex; gap:6px;}
+  .dots span{width:9px; height:9px; border-radius:50%; background:var(--line);}
+  .addr{
+    flex:1; background:var(--paper); border:1px solid var(--line); border-radius:7px;
+    padding:5px 10px; font-size:11.5px; color:var(--ink-faint); font-family:"IBM Plex Mono",monospace;
+    overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
+  }
+  .demo-badge{
+    font-size:10.5px; font-weight:600; letter-spacing:.04em; color:var(--brand-dark);
+    background:var(--brand-tint); padding:3px 8px; border-radius:100px; white-space:nowrap;
+  }
+
+  /* real vsales top nav */
+  .vnav{background:var(--brand); color:#fff; display:flex; align-items:center; gap:2px; padding:0 14px; font-size:12.5px; overflow-x:auto;}
+  .vnav .vlogo{font-family:"IBM Plex Mono",monospace; font-weight:700; font-size:15px; padding:9px 14px 9px 0; white-space:nowrap;}
+  .vnav .vitem{padding:9px 10px; white-space:nowrap; color:rgba(255,255,255,.92); font-weight:500; cursor:default;}
+  .vnav .vitem.active{background:rgba(0,0,0,.14); color:#fff;}
+  .vnav .vspacer{flex:1;}
+  .vnav .vuser{padding:9px 4px; white-space:nowrap; color:#fff; font-weight:600; display:flex; align-items:center; gap:5px;}
+  .vshortcuts{background:var(--surface-2); border-bottom:1px solid var(--line); display:flex; gap:14px; padding:7px 14px; font-size:11.5px; color:var(--brand-dark); font-weight:600; overflow-x:auto;}
+  .vshortcuts span{white-space:nowrap; opacity:.85;}
+  .vtabs{display:flex; gap:0; border-bottom:1px solid var(--line); padding:0 14px; background:var(--paper); overflow-x:auto;}
+  .vtabs div{padding:10px 14px; font-size:12.5px; font-weight:600; color:var(--ink-faint); white-space:nowrap; border-bottom:2px solid transparent;}
+  .vtabs div.active{color:var(--blue); border-bottom-color:var(--blue);}
+
+  .main{padding:18px 20px;}
+  .scr-title{font-size:17px; font-weight:700; margin:0 0 4px;}
+  .scr-sub{font-size:11.5px; color:var(--ink-faint); margin-bottom:14px;}
+
+  .panel{background:var(--paper); border:1px solid var(--line); border-radius:10px; box-shadow:var(--shadow-sm);}
+  .panel-b{padding:16px;}
+
+  .form-grid{display:grid; grid-template-columns:1fr 1fr; gap:11px 20px;}
+  .f{display:flex; flex-direction:column; gap:4px;}
+  .f.span2{grid-column:1 / -1;}
+  .f label{font-size:11px; font-weight:600; color:var(--ink-soft);}
+  .f .val{
+    border:1px solid var(--line); background:var(--paper); border-radius:6px;
+    padding:7px 10px; font-size:12.5px; color:var(--ink);
+  }
+  .f .val.grey{background:var(--surface-2); color:var(--ink-faint);}
+  .f .val.blue{color:var(--blue); font-weight:600;}
+  .f .val.green{color:var(--brand-dark); font-weight:700; background:var(--brand-tint); border-color:transparent;}
+  .f .checks{display:flex; gap:16px; padding:6px 0; font-size:12px;}
+  .f .checks label{font-size:12px; font-weight:500; color:var(--ink); display:flex; align-items:center; gap:5px;}
+
+  .pill{display:inline-block; font-size:11px; font-weight:600; padding:2px 9px; border-radius:100px; background:var(--brand-tint); color:var(--brand-dark);}
+
+  .btn{border:none; border-radius:7px; padding:9px 16px; font-size:12.5px; font-weight:600; cursor:pointer; font-family:inherit;}
+  .btn:active{transform:translateY(1px);}
+  .btn-primary{background:var(--brand); color:#fff;}
+  .btn-ghost{background:var(--surface-2); color:var(--ink-soft); border:1px solid var(--line);}
+  .btn-blue{background:var(--blue); color:#fff;}
+  .btn-row{display:flex; gap:10px; margin-top:16px; justify-content:flex-end;}
+
+  .real-tag{
+    display:inline-flex; align-items:center; gap:5px; font-size:10px; font-weight:700; letter-spacing:.03em;
+    color:var(--brand-dark); background:var(--brand-tint); padding:2px 8px; border-radius:100px; margin-bottom:8px;
+  }
+
+  .modal-overlay{position:fixed; inset:0; background:rgba(10,20,15,.55); display:none; align-items:center; justify-content:center; z-index:20; padding:20px;}
+  .modal-overlay.show{display:flex;}
+  .modal{background:var(--paper); border-radius:10px; box-shadow:var(--shadow); overflow:hidden; width:300px;}
+  .modal-h{background:var(--brand); color:#fff; font-weight:700; font-size:13.5px; padding:10px 14px;}
+  .modal-b{padding:16px; font-size:13px;}
+  .modal-b .row{display:flex; justify-content:space-between; margin:8px 0; font-size:12.5px;}
+  .modal-b .row.big{font-size:15px; font-weight:700; color:var(--brand-dark); border-top:1px solid var(--line); padding-top:10px;}
+  .modal-btns{display:flex; gap:8px; margin-top:14px;}
+  .modal-btns button{flex:1;}
+
+  /* login */
+  .login-wrap{display:flex; min-height:400px; align-items:center; justify-content:center; padding:30px;}
+  .login-card{width:300px; border:1px solid var(--line); border-radius:8px; overflow:hidden; box-shadow:var(--shadow-sm);}
+  .login-card .lh{background:var(--blue-tint); color:var(--blue); font-weight:700; text-align:center; padding:11px; font-size:13.5px;}
+  .login-card .lb{padding:18px; display:flex; flex-direction:column; gap:12px; background:var(--paper);}
+
+  /* front desk tiles */
+  .fd-grid{display:grid; grid-template-columns:1fr 1fr; gap:10px; max-width:420px;}
+  .fd-tile{background:var(--brand-dark); color:#fff; border-radius:8px; padding:16px 10px; text-align:center; font-size:12.5px; font-weight:600;}
+
+  /* article grid (add stock / cash sale) */
+  .grid-table{width:100%; border-collapse:collapse; font-size:12.5px; margin-bottom:10px;}
+  .grid-table th{text-align:left; font-size:10.5px; color:var(--ink-faint); text-transform:uppercase; letter-spacing:.03em; padding:6px 8px; background:var(--surface-2); border-bottom:1px solid var(--line);}
+  .grid-table td{padding:7px 8px; border-bottom:1px solid var(--line);}
+  .grid-table tr.hl td{background:var(--blue-tint);}
+
+  .kv-row{display:grid; grid-template-columns:repeat(5,1fr); gap:10px; margin-top:6px;}
+  .kv-row .f label{font-size:10px;}
+  .kv-row .f .val{font-size:12px; padding:6px 8px;}
+
+  .totals{display:flex; flex-direction:column; gap:6px; max-width:280px; margin-left:auto; margin-top:14px;}
+  .totals .row{display:flex; justify-content:space-between; font-size:12.5px;}
+  .totals .row.payable{font-size:15px; font-weight:700; color:var(--brand-dark); border-top:1px solid var(--line); padding-top:8px;}
+
+  /* reports */
+  .rep-layout{display:grid; grid-template-columns:190px 1fr; gap:16px;}
+  .rep-nav{font-size:11.5px;}
+  .rep-nav .grp{font-weight:700; color:var(--ink-soft); margin:10px 0 4px; text-transform:uppercase; font-size:10px; letter-spacing:.03em;}
+  .rep-nav .itm{padding:4px 6px; border-radius:5px; color:var(--blue); cursor:default;}
+  .rep-nav .itm.active{background:var(--blue-tint); font-weight:700;}
+  .rep-preview{background:var(--paper); border:1px solid var(--line); border-radius:8px; padding:16px; font-size:11.5px;}
+  .rep-preview .rp-title{font-size:15px; font-weight:700; margin-bottom:2px;}
+  .rep-preview .rp-meta{color:var(--ink-faint); font-size:10.5px; margin-bottom:10px;}
+  .rep-preview table{width:100%; border-collapse:collapse; font-size:11px; margin-bottom:12px;}
+  .rep-preview th{text-align:left; padding:5px 6px; border-bottom:1px solid var(--ink); font-size:10px;}
+  .rep-preview td{padding:5px 6px; border-bottom:1px solid var(--line);}
+  .rep-preview .grp-h{font-weight:700; color:var(--brand-dark); margin:8px 0 2px; font-size:11px;}
+  .rep-preview .totalrow td{font-weight:700; border-top:1px solid var(--ink);}
+  .rep-preview .rp-foot{color:var(--ink-faint); font-size:10px; margin-top:8px; text-align:right;}
+  .num{text-align:right; font-family:"IBM Plex Mono",monospace;}
+
+  .caption-dock{position:fixed; left:0; right:0; bottom:0; z-index:5; background:var(--paper); border-top:1px solid var(--line); padding:12px 18px; padding-bottom:calc(12px + env(safe-area-inset-bottom,0px));}
+  .caption-inner{max-width:1100px; margin:0 auto; display:flex; align-items:center; gap:16px;}
+  .caption-text{flex:1; min-width:0;}
+  .caption-text .sw{font-size:13px; font-weight:600; color:var(--ink);}
+  .caption-text .en{font-size:11.5px; color:var(--ink-faint); margin-top:1px;}
+  .nav-btns{display:flex; gap:8px; flex-shrink:0;}
+
+  @media (max-width:760px){
+    .form-grid{grid-template-columns:1fr;}
+    .kv-row{grid-template-columns:1fr 1fr;}
+    .rep-layout{grid-template-columns:1fr;}
+    .rep-nav{display:none;}
+    .caption-inner{flex-direction:column; align-items:stretch; gap:10px;}
+    .nav-btns{justify-content:flex-end;}
+    body{padding-bottom:150px;}
+  }
+</style>
+
+<div class="page">
+  <div class="lede">
+    <div class="kicker">Onyesho la Vsales &middot; Live Simulation</div>
+    <h1>Kutoka Setup hadi Reports &mdash; hatua nne halisi</h1>
+    <p>Data na namba zote hapa chini &mdash; FF-2026-77, GRN 17, Ref No 19, salio la 195 &mdash; zilitolewa na mfumo halisi wa Vsales (vsales.viramol.co.tz) baada ya kuingia na admin.<br>
+    <span style="color:var(--ink-faint)">Every field, button label and number below was captured live from vsales.viramol.co.tz after logging in as admin &mdash; not invented.</span></p>
+    <div class="verified">&#10003; Data halisi kutoka mfumoni / Live data, verified on-site</div>
+  </div>
+
+  <div class="frame">
+    <div class="chrome">
+      <div class="dots"><span></span><span></span><span></span></div>
+      <div class="addr" id="addr">vsales.viramol.co.tz</div>
+      <div class="demo-badge">SIMULATION &middot; NOT LIVE</div>
+    </div>
+
+    <!-- STEP 0: INTRO -->
+    <section class="step" data-step="0">
+      <div style="display:flex; align-items:center; justify-content:center; min-height:440px; padding:30px;">
+        <div style="max-width:520px; text-align:center;">
+          <div class="pill" style="margin-bottom:14px;">Muhtasari / Scenario overview</div>
+          <h2 style="margin:0 0 14px; font-size:19px;">FF-2026-77 &middot; Fuel Filter - Isuzu NPR</h2>
+          <div style="display:flex; flex-direction:column; gap:9px; text-align:left; font-size:12.5px; color:var(--ink-soft); background:var(--surface-2); border-radius:10px; padding:16px;">
+            <div>1&#41; <b style="color:var(--ink)">Setup &rarr; Articles &rarr; New Article</b> &mdash; sajili FF-2026-77</div>
+            <div>2&#41; <b style="color:var(--ink)">Stock Movement &rarr; Add Stock</b> &mdash; ingiza PC 200.00 (GRN 17)</div>
+            <div>3&#41; <b style="color:var(--ink)">Sales &rarr; Cash Sale</b> &mdash; uza PC 5.00 kwa TZS 130,000 (Ref No 19)</div>
+            <div>4&#41; <b style="color:var(--ink)">Reports</b> &mdash; Daily Sales &amp; Stock Content (salio 195.00)</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- STEP 1: LOGIN -->
+    <section class="step" data-step="1" hidden>
+      <div class="login-wrap">
+        <div class="login-card">
+          <div class="lh">Login To Vsales</div>
+          <div class="lb">
+            <div class="f"><label>Username</label><div class="val blue">admin</div></div>
+            <div class="f"><label>Password</label><div class="val blue">&bull;&bull;&bull;&bull;&bull;&bull;&bull;</div></div>
+            <button class="btn btn-blue" id="loginBtn" style="width:100%;">Login</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- STEP 2: NEW ARTICLE -->
+    <section class="step" data-step="2" hidden>
+      <div class="vnav">
+        <div class="vlogo">Vsales</div>
+        <div class="vitem">Sales</div><div class="vitem">Purchases</div><div class="vitem">Payments &#9662;</div>
+        <div class="vitem">Stock Movement &#9662;</div><div class="vitem">Accounting &#9662;</div><div class="vitem">Reports</div>
+        <div class="vitem">Extra &#9662;</div><div class="vitem active">Setup &#9662;</div>
+        <div class="vspacer"></div>
+        <div class="vuser">&#128100; Super Admin</div>
+      </div>
+      <div class="vtabs">
+        <div>Articles</div><div class="active">New Article</div><div>Import Articles</div><div>Article Links</div><div>Article Groups</div><div>Article POS Groups</div>
+      </div>
+      <div class="main">
+        <div class="scr-title">Article Details</div>
+        <div class="scr-sub">Company/Article.aspx &middot; captured live from the real form</div>
+        <div class="panel"><div class="panel-b">
+          <div class="form-grid">
+            <div class="f"><label>Article Code</label><div class="val mono">FF-2026-77</div></div>
+            <div class="f"><label>Description</label><div class="val">Fuel Filter - Isuzu NPR</div></div>
+            <div class="f"><label>Article Type</label><div class="val">Product</div></div>
+            <div class="f"><label>Measurement Unit</label><div class="val">PC</div></div>
+            <div class="f"><label>Currency</label><div class="val">TZS</div></div>
+            <div class="f"><label>Group</label><div class="val">FILTERS</div></div>
+            <div class="f"><label>Purchase Price</label><div class="val mono">15,000.00 TZS</div></div>
+            <div class="f"><label>Pack Qty</label><div class="val mono">1.00</div></div>
+            <div class="f"><label>Freight Cost</label><div class="val mono">500.00 TZS</div></div>
+            <div class="f"><label>Default Add Location</label><div class="val">Store</div></div>
+            <div class="f"><label>Total Cost <span style="font-weight:400;">(auto)</span></label><div class="val grey mono">15,500.00 TZS</div></div>
+            <div class="f"><label>Default Issue Location</label><div class="val">Store</div></div>
+            <div class="f"><label>Profit Margin <span style="font-weight:400;">(auto)</span></label><div class="val grey mono">41.94 %</div></div>
+            <div class="f"><label>Order Level</label><div class="val mono">10.00</div></div>
+            <div class="f"><label>Initial Price</label><div class="val mono">22,000.00 TZS</div></div>
+            <div class="f"><label>Physical Stock <span style="font-weight:400;">(auto)</span></label><div class="val grey mono">0.00</div></div>
+            <div class="f"><label>Tax Category</label><div class="val">VAT</div></div>
+            <div class="f"><label>Ecomical Stock <span style="font-weight:400;">(auto)</span></label><div class="val grey mono">0.00</div></div>
+            <div class="f"><label>Sell Price</label><div class="val green mono">26,000.00 TZS</div></div>
+            <div class="f"><label>I Buy / I Sell</label><div class="checks"><label><input type="checkbox" checked disabled> I Buy</label><label><input type="checkbox" checked disabled> I Sell</label></div></div>
+          </div>
+          <div class="btn-row">
+            <button class="btn btn-ghost">Cancel</button>
+            <button class="btn btn-primary" id="saveArticleBtn">Save Article</button>
+          </div>
+        </div></div>
+      </div>
+    </section>
+
+    <!-- STEP 3: ADD STOCK -->
+    <section class="step" data-step="3" hidden>
+      <div class="vnav">
+        <div class="vlogo">Vsales</div>
+        <div class="vitem">Sales</div><div class="vitem">Purchases</div><div class="vitem">Payments &#9662;</div>
+        <div class="vitem active">Stock Movement &#9662;</div><div class="vitem">Accounting &#9662;</div><div class="vitem">Reports</div>
+        <div class="vitem">Extra &#9662;</div><div class="vitem">Setup &#9662;</div>
+        <div class="vspacer"></div>
+        <div class="vuser">&#128100; Super Admin</div>
+      </div>
+      <div class="vtabs"><div class="active">Add Stock</div><div>Issue Stock</div><div>Transfer Stock</div></div>
+      <div class="main">
+        <div class="scr-title">Add Stock &middot; Session <span class="mono" style="color:var(--blue);">8091</span></div>
+        <div class="scr-sub">Company/AddStock.aspx &middot; captured live from the real form</div>
+        <div class="panel"><div class="panel-b">
+          <table class="grid-table">
+            <thead><tr><th style="width:40px;">Seq</th><th>Article</th><th>Description</th></tr></thead>
+            <tbody><tr class="hl"><td>1</td><td class="mono">FF-2026-77</td><td>Fuel Filter - Isuzu NPR</td></tr></tbody>
+          </table>
+          <div class="kv-row">
+            <div class="f"><label>Date</label><div class="val mono">19/09/2026</div></div>
+            <div class="f"><label>Cur</label><div class="val">TZS</div></div>
+            <div class="f"><label>Cost Value</label><div class="val mono">15,000.00</div></div>
+            <div class="f"><label>Location</label><div class="val">Store</div></div>
+            <div class="f"><label>Qty</label><div class="val green mono">200.00</div></div>
+          </div>
+          <div class="f span2" style="margin-top:12px;"><label>Comments</label><div class="val">Delivery Note DN-4471 - Azam Distributors (T) Ltd</div></div>
+          <div class="btn-row">
+            <button class="btn btn-ghost">Save (draft session)</button>
+            <button class="btn btn-primary" id="saveStockBtn">Add Stock</button>
+          </div>
+        </div></div>
+      </div>
+    </section>
+
+    <!-- STEP 4: CASH SALE -->
+    <section class="step" data-step="4" hidden>
+      <div class="vnav">
+        <div class="vlogo">Vsales</div>
+        <div class="vitem active">Sales</div><div class="vitem">Purchases</div><div class="vitem">Payments &#9662;</div>
+        <div class="vitem">Stock Movement &#9662;</div><div class="vitem">Accounting &#9662;</div><div class="vitem">Reports</div>
+        <div class="vitem">Extra &#9662;</div><div class="vitem">Setup &#9662;</div>
+        <div class="vspacer"></div>
+        <div class="vuser">&#128100; Super Admin</div>
+      </div>
+      <div class="vshortcuts"><span>&#128221; Quotation</span><span>&#128176; Cash Sale</span><span>&#128196; Invoice</span><span>&#128179; Payin</span><span>&#128722; Purchase Order</span></div>
+      <div class="main">
+        <div class="scr-title">Cash Sale <span style="font-weight:400; color:var(--ink-faint); font-size:12px;">&middot; Branch: Main Branch</span></div>
+        <div class="scr-sub">Company/Sale.aspx?T=CashSale &middot; captured live from the real form</div>
+        <div class="panel"><div class="panel-b">
+          <div class="f" style="margin-bottom:10px;"><label><input type="checkbox" disabled> Customer <span style="font-weight:400; color:var(--ink-faint);">(unchecked = walk-in cash customer)</span></label></div>
+          <table class="grid-table">
+            <thead><tr><th style="width:40px;">Seq</th><th>Article</th><th>Description</th><th class="num">Qty</th><th class="num">Unit Price(Incl)</th><th class="num">Total(Incl)</th></tr></thead>
+            <tbody><tr class="hl"><td>1</td><td class="mono">FF-2026-77</td><td>Fuel Filter - Isuzu NPR</td><td class="num mono">5.00</td><td class="num mono">26,000.00</td><td class="num mono">130,000.00</td></tr></tbody>
+          </table>
+          <div class="totals">
+            <div class="row"><span>Sub Total</span><span class="mono">110,169.49 TZS</span></div>
+            <div class="row"><span>Discount</span><span class="mono">0.00 TZS</span></div>
+            <div class="row"><span>VAT</span><span class="mono">19,830.51 TZS</span></div>
+            <div class="row payable"><span>Payable</span><span class="mono">130,000.00 TZS</span></div>
+          </div>
+          <div class="btn-row">
+            <button class="btn btn-primary" id="payBtn" style="width:140px;">Pay</button>
+          </div>
+        </div></div>
+      </div>
+    </section>
+
+    <!-- STEP 5: REPORTS -->
+    <section class="step" data-step="5" hidden>
+      <div class="vnav">
+        <div class="vlogo">Vsales</div>
+        <div class="vitem">Sales</div><div class="vitem">Purchases</div><div class="vitem">Payments &#9662;</div>
+        <div class="vitem">Stock Movement &#9662;</div><div class="vitem">Accounting &#9662;</div><div class="vitem active">Reports</div>
+        <div class="vitem">Extra &#9662;</div><div class="vitem">Setup &#9662;</div>
+        <div class="vspacer"></div>
+        <div class="vuser">&#128100; Super Admin</div>
+      </div>
+      <div class="main">
+        <div class="scr-title">Reports</div>
+        <div class="scr-sub">Company/Reports.aspx &middot; captured live from the real report viewer</div>
+        <div class="rep-layout">
+          <div class="rep-nav">
+            <div class="grp">Sales</div>
+            <div class="itm active" id="navDaily">&#9670; Daily Sales(General)</div>
+            <div class="itm">&#9670; Daily Sales(Itemised)</div>
+            <div class="itm">&#9670; Itemised Sales Profit</div>
+            <div class="grp">Stock</div>
+            <div class="itm">&#9670; GRN - Goods Received Note</div>
+            <div class="itm">&#9670; BIN Card</div>
+            <div class="itm active" id="navStock">&#9670; Stock Content</div>
+            <div class="itm">&#9670; Expiry Goods</div>
+            <div class="itm">&#9670; Stock Level</div>
+            <div class="grp">Audit</div>
+            <div class="itm">&#9670; User Activities</div>
+          </div>
+          <div>
+            <div class="rep-preview" id="repDaily">
+              <div class="rp-title">Daily Sales (General)</div>
+              <div class="rp-meta">From 19/09/2026 To 19/09/2026, DocType:All, PaidStatus:All, User:All, Branch:All</div>
+              <div class="grp-h">CHINA Sales</div>
+              <table>
+                <thead><tr><th>Sale Date</th><th>Sale Type</th><th>Ref No</th><th>Cur</th><th class="num">Amount</th><th class="num">Paid Amount</th><th>Entry Time</th><th>User</th></tr></thead>
+                <tbody>
+                  <tr><td class="mono">19/09/2026</td><td>CashSale</td><td class="mono">19</td><td>TZS</td><td class="num mono">130,000.00</td><td class="num mono">130,000.00</td><td class="mono">14:10:50</td><td>Super Admin</td></tr>
+                  <tr class="totalrow"><td colspan="4">CHINA Total</td><td class="num mono">130,000.00</td><td class="num mono">130,000.00</td><td colspan="2"></td></tr>
+                </tbody>
+              </table>
+              <div class="rp-foot">Printed on 19 Sep 2026 by Super Admin &middot; Page 1 of 1</div>
+            </div>
+            <div class="rep-preview" id="repStock" style="display:none; margin-top:14px;">
+              <div class="rp-title">Stock Content</div>
+              <div class="rp-meta">Article: FF-2026-77, Group: All, Location: All, On 19/09/2026</div>
+              <div class="grp-h">Store &middot; FILTERS - aLL fILTERS</div>
+              <table>
+                <thead><tr><th>Article Code</th><th>Description</th><th class="num">Economical Qty</th><th class="num">Technical Qty</th></tr></thead>
+                <tbody>
+                  <tr><td class="mono">FF-2026-77</td><td>Fuel Filter - Isuzu NPR</td><td class="num mono">195.00</td><td class="num mono">195.00</td></tr>
+                  <tr class="totalrow"><td colspan="2">Total(FF-2026-77)</td><td class="num mono">195.00</td><td class="num mono">195.00</td></tr>
+                </tbody>
+              </table>
+              <div class="rp-foot">Printed on 19 Sep 2026 by Super Admin &middot; Page 1 of 1</div>
+            </div>
+            <div style="margin-top:14px; padding:14px 16px; border-radius:10px; background:var(--brand-tint); font-size:12.5px; color:var(--brand-dark);">
+              <b>Mzunguko halisi umekamilika:</b> 200.00 PC zilizoingizwa &minus; 5.00 PC zilizouzwa = 195.00 PC zilizobaki, na TZS 130,000.00 za mauzo &mdash; namba hizi zote zilitolewa moja kwa moja na mfumo halisi.
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+</div>
+
+<div class="modal-overlay" id="articleModal"><div class="modal">
+  <div class="modal-h">Information</div>
+  <div class="modal-b">
+    <div>Article <b class="mono">FF-2026-77</b> saved successfully.</div>
+    <div class="modal-btns"><button class="btn btn-blue" id="okArticle" style="width:100%;">Ok</button></div>
+  </div>
+</div></div>
+
+<div class="modal-overlay" id="stockModal"><div class="modal">
+  <div class="modal-h">Confirm</div>
+  <div class="modal-b">
+    <div>Articles were added to stock successfully.</div>
+    <div style="margin-top:6px;">Print GRN <b class="mono">17</b>?</div>
+    <div class="modal-btns"><button class="btn btn-ghost" style="width:100%;" id="noGrn">No</button><button class="btn btn-blue" style="width:100%;" id="yesGrn">Yes</button></div>
+  </div>
+</div></div>
+
+<div class="modal-overlay" id="payModal"><div class="modal">
+  <div class="modal-h">Payment</div>
+  <div class="modal-b">
+    <div class="row"><span>Payable Amount:</span><span class="mono">130,000.00 TZS</span></div>
+    <div class="row"><span>Paid Amount:</span><span class="mono">150,000 TZS</span></div>
+    <div class="row big"><span>Change:</span><span class="mono">20,000.00 TZS</span></div>
+    <div class="modal-btns"><button class="btn btn-blue" id="okPay" style="width:100%;">Ok</button></div>
+  </div>
+</div></div>
+
+<div class="caption-dock">
+  <div class="caption-inner">
+    <div class="caption-text">
+      <div class="sw" id="capSw"></div>
+      <div class="en" id="capEn"></div>
+    </div>
+    <div class="nav-btns">
+      <button class="btn btn-ghost" id="backBtn">&larr; Nyuma</button>
+      <button class="btn btn-primary" id="nextBtn">Mbele &rarr;</button>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  var steps = [
+    {addr:"vsales.viramol.co.tz / AboutSystem.aspx",
+     sw:"Anza onyesho: hatua zote nne zilizofuata hapa ni halisi kutoka mfumo wa Vsales.",
+     en:"Start the demo: every step that follows was carried out live in the real Vsales system."},
+    {addr:"vsales.viramol.co.tz / Login.aspx",
+     sw:"Hatua 1: Kuingia mfumoni na akaunti ya admin.",
+     en:"Step 1: Sign in to Vsales with the admin account."},
+    {addr:"vsales.viramol.co.tz / Company/Article.aspx",
+     sw:"Hatua 2: Setup &rarr; Articles &rarr; New Article. Bei ya Total Cost na Profit Margin zinahesabiwa kiotomatiki na mfumo.",
+     en:"Step 2: Setup &rarr; Articles &rarr; New Article. Total Cost and Profit Margin are auto-calculated by the system."},
+    {addr:"vsales.viramol.co.tz/Company/AddStock.aspx",
+     sw:"Hatua 3: Stock Movement &rarr; Add Stock. Bonyeza 'Add Stock' (siyo 'Save' pekee) ndiyo inayoongeza mzigo ghalani rasmi.",
+     en:"Step 3: Stock Movement &rarr; Add Stock. Clicking 'Add Stock' (not just 'Save') is what actually posts the stock."},
+    {addr:"vsales.viramol.co.tz/Company/Sale.aspx?T=CashSale",
+     sw:"Hatua 4: Sales &rarr; Cash Sale. Baada ya 'Pay', mfumo unahesabu chenji papo hapo.",
+     en:"Step 4: Sales &rarr; Cash Sale. After tapping 'Pay', the system computes change instantly."},
+    {addr:"vsales.viramol.co.tz/Company/Reports.aspx",
+     sw:"Hatua 5: Reports &mdash; Daily Sales na Stock Content zinaonyesha mauzo na salio papo hapo.",
+     en:"Step 5: Reports &mdash; Daily Sales and Stock Content reflect the sale and balance instantly."}
+  ];
+  var cur = 0;
+  var sections = document.querySelectorAll('.step');
+  function render(){
+    sections.forEach(function(s){ s.hidden = (parseInt(s.dataset.step,10) !== cur); });
+    document.getElementById('addr').textContent = steps[cur].addr;
+    document.getElementById('capSw').innerHTML = (cur+1)+'/'+steps.length+' &middot; '+steps[cur].sw;
+    document.getElementById('capEn').innerHTML = steps[cur].en;
+    document.getElementById('backBtn').style.opacity = cur===0 ? .4 : 1;
+    document.getElementById('nextBtn').textContent = cur===steps.length-1 ? 'Anza Tena ↻' : 'Mbele →';
+  }
+  document.getElementById('nextBtn').addEventListener('click', function(){ cur = (cur===steps.length-1) ? 0 : cur+1; render(); });
+  document.getElementById('backBtn').addEventListener('click', function(){ if(cur>0){ cur--; render(); } });
+  render();
+
+  document.getElementById('loginBtn').addEventListener('click', function(){ cur=2; render(); });
+  document.getElementById('saveArticleBtn').addEventListener('click', function(){ document.getElementById('articleModal').classList.add('show'); });
+  document.getElementById('okArticle').addEventListener('click', function(){ document.getElementById('articleModal').classList.remove('show'); });
+  document.getElementById('saveStockBtn').addEventListener('click', function(){ document.getElementById('stockModal').classList.add('show'); });
+  document.getElementById('noGrn').addEventListener('click', function(){ document.getElementById('stockModal').classList.remove('show'); });
+  document.getElementById('yesGrn').addEventListener('click', function(){ document.getElementById('stockModal').classList.remove('show'); });
+  document.getElementById('payBtn').addEventListener('click', function(){ document.getElementById('payModal').classList.add('show'); });
+  document.getElementById('okPay').addEventListener('click', function(){ document.getElementById('payModal').classList.remove('show'); cur=5; render(); });
+
+  document.getElementById('navDaily').addEventListener('click', function(){
+    document.getElementById('navDaily').classList.add('active'); document.getElementById('navStock').classList.remove('active');
+    document.getElementById('repDaily').style.display=''; document.getElementById('repStock').style.display='none';
+  });
+  document.getElementById('navStock').addEventListener('click', function(){
+    document.getElementById('navStock').classList.add('active'); document.getElementById('navDaily').classList.remove('active');
+    document.getElementById('repStock').style.display=''; document.getElementById('repDaily').style.display='none';
+  });
+})();
+</script>
